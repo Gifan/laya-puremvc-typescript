@@ -263,7 +263,7 @@ declare module puremvc {
 
 
     export abstract class MacroCommand extends Notifier implements ICommand {
-        private $commands: Array<new () => ICommand> = [];
+        private $commands: Array<new () => ICommand>;
 
         constructor();
 
