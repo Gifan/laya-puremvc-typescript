@@ -18,7 +18,7 @@ module puremvc {
         static inst: IFacade = null;
 
         static getInstance(): IFacade {
-            if (Facade.inst == null) {
+            if (Facade.inst === null) {
                 Facade.inst = new Facade();
             }
             return Facade.inst;
@@ -29,7 +29,7 @@ module puremvc {
         private $controller: IController = new Controller();
 
         constructor() {
-            if (Facade.inst) {
+            if (Facade.inst !== null) {
                 throw Error(Facade.SINGLETON_MSG);
             }
             Facade.inst = this;

@@ -15,7 +15,7 @@ module puremvc {
 
     export class View implements IView {
         static readonly SINGLETON_MSG: string = "View singleton already constructed!";
-        static inst: IView;
+        static inst: IView = null;
 
         private $mediators: { [name: string]: IMediator } = {};
         private $observers: { [name: string]: Array<boolean | IObserver> } = {};
@@ -24,7 +24,7 @@ module puremvc {
         private $onceObservers: Array<IObserver> = [];
 
         constructor() {
-            if (View.inst) {
+            if (View.inst !== null) {
                 throw Error(View.SINGLETON_MSG);
             }
             View.inst = this;
@@ -47,7 +47,7 @@ module puremvc {
                 observers = this.$observers[name] = [false];
             }
             // 若当前禁止直接更新，则复制列表
-            else if (observers[0] == true) {
+            else if (observers[0] === true) {
                 observers = this.$observers[name] = observers.concat();
                 // 新生成的列表允许被更新
                 observers[0] = false;
@@ -56,11 +56,11 @@ module puremvc {
             let index: number = -1;
             for (let i: number = 1; i < observers.length; i++) {
                 const observer: IObserver = observers[i] as IObserver;
-                if (observer.method == method && observer.caller == caller) {
+                if (observer.method === method && observer.caller === caller) {
                     return null;
                 }
                 // 优先级高的命令先执行
-                if (index == -1 && observer.priority < priority) {
+                if (index === -1 && observer.priority < priority) {
                     index = i;
                 }
             }
@@ -93,20 +93,20 @@ module puremvc {
                 return;
             }
             // 若当前禁止直接更新，则复制列表
-            if (observers[0] == true) {
+            if (observers[0] === true) {
                 observers = this.$observers[name] = observers.concat();
                 // 新生成的列表允许被更新
                 observers[0] = false;
             }
             for (let i: number = 1; i < observers.length; i++) {
                 const observer: IObserver = observers[i] as IObserver;
-                if (observer.method == method && observer.caller == caller) {
+                if (observer.method === method && observer.caller === caller) {
                     observers.splice(i, 1);
                     break;
                 }
             }
             // 移除空列表
-            if (observers.length == 1) {
+            if (observers.length === 1) {
                 delete this.$observers[name];
             }
         }
@@ -138,10 +138,10 @@ module puremvc {
             for (let i: number = 1; i < observers.length; i++) {
                 const observer: IObserver = observers[i] as IObserver;
                 // 一次性命令入栈
-                if (observer.receiveOnce) {
+                if (observer.receiveOnce === true) {
                     this.$onceObservers.push(observer);
                 }
-                if (observer.caller == Controller.inst) {
+                if (observer.caller === Controller.inst) {
                     observer.method.call(observer.caller, name, args);
                 }
                 else if (args === void 0) {
@@ -154,7 +154,7 @@ module puremvc {
                     observer.method.call(observer.caller, args);
                 }
                 // 命令允许被取消，且命令被取消
-                if (cancelable && this.$isCanceled) {
+                if (cancelable === true && this.$isCanceled) {
                     break;
                 }
             }
@@ -172,10 +172,10 @@ module puremvc {
 
         registerMediator(mediator: IMediator): void {
             const name: string = mediator.getMediatorName();
-            if (name == null) {
+            if (name === null) {
                 throw Error("Register Invalid Mediator");
             }
-            if (this.hasMediator(name)) {
+            if (this.hasMediator(name) === true) {
                 throw Error("Register Duplicate Mediator " + name);
             }
             this.$mediators[name] = mediator;
@@ -188,7 +188,7 @@ module puremvc {
                 throw Error("Remove Invalid Mediator");
             }
             const mediator: IMediator = this.retrieveMediator(name);
-            if (mediator == null) {
+            if (mediator === null) {
                 throw Error("Remove Non-Existent Mediator " + name);
             }
             delete this.$mediators[name];

@@ -15,12 +15,12 @@ module puremvc {
 
     export class Controller implements IController {
         static readonly SINGLETON_MSG: string = "Controller singleton already constructed!";
-        static inst: IController;
+        static inst: IController = null;
 
         private $commands: { [name: string]: new () => ICommand } = {};
 
         constructor() {
-            if (Controller.inst) {
+            if (Controller.inst !== null) {
                 throw Error(Controller.SINGLETON_MSG);
             }
             Controller.inst = this;
@@ -41,7 +41,7 @@ module puremvc {
         }
 
         registerCommand(name: string, cls: new () => ICommand): void {
-            if (this.hasCommand(name)) {
+            if (this.hasCommand(name) === true) {
                 throw Error("Register Duplicate Command " + name);
             }
             this.$commands[name] = cls;
@@ -49,7 +49,7 @@ module puremvc {
         }
 
         removeCommand(name: string): void {
-            if (this.hasCommand(name) == false) {
+            if (this.hasCommand(name) === false) {
                 throw Error("Remove Non-Existent Command " + name);
             }
             delete this.$commands[name];

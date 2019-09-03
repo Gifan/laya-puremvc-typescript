@@ -15,12 +15,12 @@ module puremvc {
 
     export class Model implements IModel {
         static readonly SINGLETON_MSG: string = "Model singleton already constructed!";
-        static inst: IModel;
+        static inst: IModel = null;
 
         private $proxies: { [name: string]: IProxy } = {};
 
         constructor() {
-            if (Model.inst) {
+            if (Model.inst !== null) {
                 throw Error(Model.SINGLETON_MSG);
             }
             Model.inst = this;
@@ -28,10 +28,10 @@ module puremvc {
 
         registerProxy(proxy: IProxy): void {
             const name: string = proxy.getProxyName();
-            if (name == null) {
+            if (name === null) {
                 throw Error("Register Invalid Proxy");
             }
-            if (this.hasProxy(name)) {
+            if (this.hasProxy(name) === false) {
                 throw Error("Register Duplicate Proxy " + name);
             }
             this.$proxies[name] = proxy;
@@ -43,7 +43,7 @@ module puremvc {
                 throw Error("Remove Invalid Proxy");
             }
             const proxy: IProxy = this.retrieveProxy(name);
-            if (proxy == null) {
+            if (proxy === null) {
                 throw Error("Remove Non-Existent Proxy " + name);
             }
             delete this.$proxies[name];
