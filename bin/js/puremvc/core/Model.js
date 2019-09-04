@@ -16,17 +16,17 @@ var puremvc;
     var Model = /** @class */ (function () {
         function Model() {
             this.$proxies = {};
-            if (Model.inst) {
+            if (Model.inst !== null) {
                 throw Error(Model.SINGLETON_MSG);
             }
             Model.inst = this;
         }
         Model.prototype.registerProxy = function (proxy) {
             var name = proxy.getProxyName();
-            if (name == null) {
+            if (name === null) {
                 throw Error("Register Invalid Proxy");
             }
-            if (this.hasProxy(name)) {
+            if (this.hasProxy(name) === true) {
                 throw Error("Register Duplicate Proxy " + name);
             }
             this.$proxies[name] = proxy;
@@ -37,7 +37,7 @@ var puremvc;
                 throw Error("Remove Invalid Proxy");
             }
             var proxy = this.retrieveProxy(name);
-            if (proxy == null) {
+            if (proxy === null) {
                 throw Error("Remove Non-Existent Proxy " + name);
             }
             delete this.$proxies[name];
@@ -50,6 +50,7 @@ var puremvc;
             return this.retrieveProxy(name) != null;
         };
         Model.SINGLETON_MSG = "Model singleton already constructed!";
+        Model.inst = null;
         return Model;
     }());
     puremvc.Model = Model;

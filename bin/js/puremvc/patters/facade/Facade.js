@@ -18,14 +18,14 @@ var puremvc;
             this.$view = new puremvc.View();
             this.$model = new puremvc.Model();
             this.$controller = new puremvc.Controller();
-            if (Facade.inst) {
+            if (Facade.inst !== null) {
                 throw Error(Facade.SINGLETON_MSG);
             }
             Facade.inst = this;
             this.$initializeFacade();
         }
         Facade.getInstance = function () {
-            if (Facade.inst == null) {
+            if (Facade.inst === null) {
                 Facade.inst = new Facade();
             }
             return Facade.inst;

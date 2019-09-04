@@ -31,7 +31,7 @@ module puremvc {
             if (name === null) {
                 throw Error("Register Invalid Proxy");
             }
-            if (this.hasProxy(name) === false) {
+            if (this.hasProxy(name) === true) {
                 throw Error("Register Duplicate Proxy " + name);
             }
             this.$proxies[name] = proxy;

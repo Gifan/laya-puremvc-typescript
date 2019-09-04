@@ -19,11 +19,15 @@ var puremvc;
             this.$observers = {};
             this.$isCanceled = false;
             this.$onceObservers = [];
-            if (View.inst) {
+            if (View.inst !== null) {
                 throw Error(View.SINGLETON_MSG);
             }
             View.inst = this;
         }
+        /**
+         * @receiveOnce: 是否只响应一次，默认为false
+         * @priority: 优先级，优先响应级别高的消息，值越大，级别越高，默认为1
+         */
         View.prototype.registerObserver = function (name, method, caller, receiveOnce, priority) {
             if (receiveOnce === void 0) { receiveOnce = false; }
             if (priority === void 0) { priority = 1; }
@@ -39,7 +43,7 @@ var puremvc;
                 observers = this.$observers[name] = [false];
             }
             // 若当前禁止直接更新，则复制列表
-            else if (observers[0] == true) {
+            else if (observers[0] === true) {
                 observers = this.$observers[name] = observers.concat();
                 // 新生成的列表允许被更新
                 observers[0] = false;
@@ -47,11 +51,11 @@ var puremvc;
             var index = -1;
             for (var i = 1; i < observers.length; i++) {
                 var observer_1 = observers[i];
-                if (observer_1.method == method && observer_1.caller == caller) {
+                if (observer_1.method === method && observer_1.caller === caller) {
                     return null;
                 }
                 // 优先级高的命令先执行
-                if (index == -1 && observer_1.priority < priority) {
+                if (index === -1 && observer_1.priority < priority) {
                     index = i;
                 }
             }
@@ -82,26 +86,29 @@ var puremvc;
                 return;
             }
             // 若当前禁止直接更新，则复制列表
-            if (observers[0] == true) {
+            if (observers[0] === true) {
                 observers = this.$observers[name] = observers.concat();
                 // 新生成的列表允许被更新
                 observers[0] = false;
             }
             for (var i = 1; i < observers.length; i++) {
                 var observer = observers[i];
-                if (observer.method == method && observer.caller == caller) {
+                if (observer.method === method && observer.caller === caller) {
                     observers.splice(i, 1);
                     break;
                 }
             }
             // 移除空列表
-            if (observers.length == 1) {
+            if (observers.length === 1) {
                 delete this.$observers[name];
             }
         };
         View.prototype.notifyCancel = function () {
             this.$isCanceled = true;
         };
+        /**
+         * @cancelable: 事件是否允许取消，默认为false
+         */
         View.prototype.notifyObservers = function (name, args, cancelable) {
             if (cancelable === void 0) { cancelable = false; }
             if (name === void 0) {
@@ -121,10 +128,10 @@ var puremvc;
             for (var i = 1; i < observers.length; i++) {
                 var observer = observers[i];
                 // 一次性命令入栈
-                if (observer.receiveOnce) {
+                if (observer.receiveOnce === true) {
                     this.$onceObservers.push(observer);
                 }
-                if (observer.caller == puremvc.Controller.inst) {
+                if (observer.caller === puremvc.Controller.inst) {
                     observer.method.call(observer.caller, name, args);
                 }
                 else if (args === void 0) {
@@ -137,7 +144,7 @@ var puremvc;
                     observer.method.call(observer.caller, args);
                 }
                 // 命令允许被取消，且命令被取消
-                if (cancelable && this.$isCanceled) {
+                if (cancelable === true && this.$isCanceled) {
                     break;
                 }
             }
@@ -153,10 +160,10 @@ var puremvc;
         };
         View.prototype.registerMediator = function (mediator) {
             var name = mediator.getMediatorName();
-            if (name == null) {
+            if (name === null) {
                 throw Error("Register Invalid Mediator");
             }
-            if (this.hasMediator(name)) {
+            if (this.hasMediator(name) === true) {
                 throw Error("Register Duplicate Mediator " + name);
             }
             this.$mediators[name] = mediator;
@@ -168,7 +175,7 @@ var puremvc;
                 throw Error("Remove Invalid Mediator");
             }
             var mediator = this.retrieveMediator(name);
-            if (mediator == null) {
+            if (mediator === null) {
                 throw Error("Remove Non-Existent Mediator " + name);
             }
             delete this.$mediators[name];
@@ -182,6 +189,7 @@ var puremvc;
             return this.retrieveMediator(name) != null;
         };
         View.SINGLETON_MSG = "View singleton already constructed!";
+        View.inst = null;
         return View;
     }());
     puremvc.View = View;

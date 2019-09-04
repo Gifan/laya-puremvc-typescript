@@ -16,7 +16,7 @@ var puremvc;
     var Controller = /** @class */ (function () {
         function Controller() {
             this.$commands = {};
-            if (Controller.inst) {
+            if (Controller.inst !== null) {
                 throw Error(Controller.SINGLETON_MSG);
             }
             Controller.inst = this;
@@ -35,14 +35,14 @@ var puremvc;
             }
         };
         Controller.prototype.registerCommand = function (name, cls) {
-            if (this.hasCommand(name)) {
+            if (this.hasCommand(name) === true) {
                 throw Error("Register Duplicate Command " + name);
             }
             this.$commands[name] = cls;
             puremvc.View.inst.registerObserver(name, this.executeCommand, this);
         };
         Controller.prototype.removeCommand = function (name) {
-            if (this.hasCommand(name) == false) {
+            if (this.hasCommand(name) === false) {
                 throw Error("Remove Non-Existent Command " + name);
             }
             delete this.$commands[name];
@@ -55,6 +55,7 @@ var puremvc;
             return this.retrieveCommand(name) != null;
         };
         Controller.SINGLETON_MSG = "Controller singleton already constructed!";
+        Controller.inst = null;
         return Controller;
     }());
     puremvc.Controller = Controller;
